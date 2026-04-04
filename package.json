@@ -4,7 +4,7 @@
   "description": "紐西蘭行程與花費管理系統",
   "main": "server.js",
   "scripts": {
-    "start": "PORT=3000 node server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
