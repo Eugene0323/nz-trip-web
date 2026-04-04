@@ -71,6 +71,17 @@
           <textarea id="recommendations" rows="2" placeholder="推薦的市集、活動等"></textarea>
         </div>
         <div class="form-group">
+          <label>自訂地點標籤</label>
+          <div id="customLocationsContainer">
+            <div class="custom-location-row" style="display:flex; gap:0.5rem; margin-bottom:0.3rem;">
+              <input type="text" class="custom-loc-name" placeholder="標籤名稱" style="flex:1; padding:0.5rem; border:1px solid #ddd; border-radius:4px;">
+              <input type="url" class="custom-loc-url" placeholder="Google Maps 連結" style="flex:2; padding:0.5rem; border:1px solid #ddd; border-radius:4px;">
+              <button type="button" onclick="removeCustomLocRow(this)" style="padding:0.5rem; background:#ff4444; color:white; border:none; border-radius:4px; cursor:pointer;">✕</button>
+            </div>
+          </div>
+          <button type="button" onclick="addCustomLocRow()" style="margin-top:0.5rem; padding:0.4rem 0.8rem; background:#4a90d9; color:white; border:none; border-radius:4px; cursor:pointer; font-size:0.85rem;">+ 新增地點</button>
+        </div>
+        <div class="form-group">
           <label>附件連結</label>
           <input type="url" id="attachment_url" placeholder="粘貼 Google Drive、Dropbox 或其他檔案分享連結">
         </div>
@@ -131,6 +142,19 @@
           ${item.accommodation ? `<div class="card-accommodation">🏨 住宿：${escapeHtml(item.accommodation)}</div>` : ''}
           ${item.guide_tips ? `<div class="card-guide">🎯 導遊建議：${escapeHtml(item.guide_tips)}</div>` : ''}
           ${item.recommendations ? `<div class="card-recommend">⭐ 推薦：${escapeHtml(item.recommendations)}</div>` : ''}
+          ${item.custom_locations ? (() => {
+            try {
+              const locations = JSON.parse(item.custom_locations);
+              if (Array.isArray(locations) && locations.length > 0) {
+                return `<div class="card-custom-locations">${locations.map(loc => `
+                  <a href="${escapeHtml(loc.url)}" target="_blank" class="custom-map-tag">
+                    📍 ${escapeHtml(loc.name)}
+                  </a>
+                `).join('')}</div>`;
+              }
+            } catch(e) {}
+            return '';
+          })() : ''}
           ${item.attachment_url ? `<div class="card-attachment"><a href="${escapeHtml(item.attachment_url)}" target="_blank" class="attachment-link">📎 附件/憑證</a></div>` : ''}
           ${item.notes ? `<div class="card-notes">📝 ${escapeHtml(item.notes)}</div>` : ''}
           ${item.backup_plan ? `<div class="card-backup">💡 備案：${escapeHtml(item.backup_plan)}</div>` : ''}
@@ -168,6 +192,7 @@
         accommodation: document.getElementById('accommodation').value,
         guide_tips: document.getElementById('guide_tips').value,
         recommendations: document.getElementById('recommendations').value,
+        custom_locations: getCustomLocations(),
         attachment_url: document.getElementById('attachment_url').value,
         notes: document.getElementById('notes').value,
         backup_plan: document.getElementById('backup_plan').value
@@ -189,6 +214,36 @@
 
       closeModal();
       loadItinerary();
+    }
+
+    function addCustomLocRow() {
+      const container = document.getElementById('customLocationsContainer');
+      const row = document.createElement('div');
+      row.className = 'custom-location-row';
+      row.style = 'display:flex; gap:0.5rem; margin-bottom:0.3rem;';
+      row.innerHTML = `
+        <input type="text" class="custom-loc-name" placeholder="標籤名稱" style="flex:1; padding:0.5rem; border:1px solid #ddd; border-radius:4px;">
+        <input type="url" class="custom-loc-url" placeholder="Google Maps 連結" style="flex:2; padding:0.5rem; border:1px solid #ddd; border-radius:4px;">
+        <button type="button" onclick="removeCustomLocRow(this)" style="padding:0.5rem; background:#ff4444; color:white; border:none; border-radius:4px; cursor:pointer;">✕</button>
+      `;
+      container.appendChild(row);
+    }
+
+    function removeCustomLocRow(btn) {
+      btn.parentElement.remove();
+    }
+
+    function getCustomLocations() {
+      const rows = document.querySelectorAll('#customLocationsContainer .custom-location-row');
+      const locations = [];
+      rows.forEach(row => {
+        const name = row.querySelector('.custom-loc-name').value.trim();
+        const url = row.querySelector('.custom-loc-url').value.trim();
+        if (name && url) {
+          locations.push({ name, url });
+        }
+      });
+      return locations.length > 0 ? JSON.stringify(locations) : '';
     }
 
     loadItinerary();
