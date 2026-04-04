@@ -101,3 +101,23 @@ function escapeHtml(text) {
   div.textContent = text;
   return div.innerHTML;
 }
+
+// 帶認證的 fetch
+async function authFetch(url, options = {}) {
+  const sessionId = sessionStorage.getItem('nzSessionId');
+  if (sessionId) {
+    options.headers = {
+      ...options.headers,
+      'x-session-id': sessionId
+    };
+  }
+  const res = await fetch(url, options);
+  
+  // 如果是 401，重新登入
+  if (res.status === 401) {
+    sessionStorage.removeItem('nzSessionId');
+    window.location.href = '/login.html';
+    throw new Error('Unauthorized');
+  }
+  return res;
+}

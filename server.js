@@ -6,6 +6,60 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 app.use(express.json());
+
+// 登入驗證 middleware
+const VALID_USERNAME = 'benchu1438';
+const VALID_PASSWORD = 'cj/6t/6vu,3np';
+
+// 簡單的 session 管理（記憶體）
+const sessions = new Set();
+
+app.use((req, res, next) => {
+  // 登入頁和 API 不需要驗證
+  if (req.path === '/login.html' || req.path === '/api/login') {
+    return next();
+  }
+  
+  // API 路由需要驗證
+  if (req.path.startsWith('/api/')) {
+    const sessionId = req.headers['x-session-id'];
+    if (!sessionId || !sessions.has(sessionId)) {
+      return res.status(401).json({ success: false, error: 'Unauthorized' });
+    }
+  }
+  
+  // 其他靜態檔案需要驗證
+  if (req.path !== '/' && !req.path.startsWith('/login')) {
+    const sessionId = req.cookies?.session || req.headers['x-session-id'];
+    if (!sessionId || !sessions.has(sessionId)) {
+      // 如果是 HTML 請求，重定向到登入頁
+      if (req.accepts('html')) {
+        return res.redirect('/login.html');
+      }
+      return res.status(401).send('Unauthorized');
+    }
+  }
+  
+  next();
+});
+
+// 登入 API
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+  if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+    const sessionId = Math.random().toString(36).substring(2);
+    sessions.add(sessionId);
+    res.json({ success: true, sessionId });
+  } else {
+    res.status(401).json({ success: false, error: 'Invalid credentials' });
+  }
+});
+
+// 根路徑重定向到 index.html（需要驗證）
+app.get('/', (req, res) => {
+  res.redirect('/index.html');
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ===== 行程 API =====
