@@ -123,7 +123,7 @@
           <div class="expense-paidby ${item.paid_by}">${item.paid_by}</div>
           <div class="expense-desc">${escapeHtml(item.description)}</div>
           <div class="expense-actions">
-            <button onclick="editItem(String(${item.id}))">編輯</button>
+            <button onclick="editItem('' + ${item.id})">編輯</button>
             <button class="danger" onclick="deleteItem(${item.id})">刪除</button>
           </div>
         </div>
@@ -161,10 +161,16 @@
     let allExpenses = [];
 
     async function editItem(id) {
-      const res = await fetch(`/api/expenses/${id}`);
-      const data = await res.json();
-      if (data.success) {
-        openModal(data.data);
+      try {
+        const res = await fetch(`/api/expenses/${id}`);
+        const result = await res.json();
+        if (result.success && result.data) {
+          openModal(result.data);
+        } else {
+          console.error('API returned no data:', result);
+        }
+      } catch (err) {
+        console.error('editItem error:', err);
       }
     }
 
