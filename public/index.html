@@ -88,6 +88,11 @@
 
   <script src="app.js"></script>
   <script>
+    // 檢查登入狀態
+    if (!sessionStorage.getItem('nzSessionId')) {
+      window.location.href = '/login.html';
+    }
+    
     // 行程頁面特定邏輯
     document.getElementById('addBtn').addEventListener('click', () => openModal());
     document.getElementById('cancelBtn').addEventListener('click', () => closeModal());

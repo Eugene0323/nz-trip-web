@@ -97,6 +97,11 @@
 
   <script src="app.js"></script>
   <script>
+    // 檢查登入狀態
+    if (!sessionStorage.getItem('nzSessionId')) {
+      window.location.href = '/login.html';
+    }
+    
     const CATEGORIES = ['機票', '住宿', '體驗', '交通', '餐廳', '採買', '伴手禮', '其他'];
 
     document.getElementById('addBtn').addEventListener('click', () => openModal());
