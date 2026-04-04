@@ -185,6 +185,6 @@ function initExpenses() {
 initItinerary();
 initExpenses();
 
-app.listen(PORT, () => {
-  console.log(`🎉 NZ Trip Web 運行中: http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🎉 NZ Trip Web 運行中: http://0.0.0.0:${PORT}`);
 });
