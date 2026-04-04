@@ -94,8 +94,8 @@
           ${item.notes ? `<div class="card-notes">📝 ${escapeHtml(item.notes)}</div>` : ''}
           ${item.backup_plan ? `<div class="card-backup">💡 備案：${escapeHtml(item.backup_plan)}</div>` : ''}
           <div class="card-actions">
-            <button onclick="editItem(${item.id})">編輯</button>
-            <button class="danger" onclick="deleteItem(${item.id})">刪除</button>
+            <button onclick="editItem('${item.id}')">編輯</button>
+            <button class="danger" onclick="deleteItem('${item.id}')">刪除</button>
           </div>
         </div>
       `).join('');

@@ -23,11 +23,11 @@ function openModal(data = null) {
     if (document.getElementById('amount')) {
       document.getElementById('amount').value = data.amount || '';
     }
-    if (document.getElementById('paid_by')) {
-      document.getElementById('paid_by').value = data.paid_by || '小肉';
+    if (document.getElementById('paidby')) {
+      document.getElementById('paidby').value = data.paidby || '小肉';
     }
-    if (document.getElementById('description')) {
-      document.getElementById('description').value = data.description || '';
+    if (document.getElementById('desc')) {
+      document.getElementById('desc').value = data.desc || '';
     }
   } else {
     // 新增模式

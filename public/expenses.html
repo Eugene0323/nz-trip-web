@@ -78,14 +78,14 @@
         </div>
         <div class="form-group">
           <label>誰付的</label>
-          <select id="paid_by" required>
+          <select id="paidby" required>
             <option value="小肉">小肉</option>
             <option value="小妞">小妞</option>
           </select>
         </div>
         <div class="form-group">
           <label>備註</label>
-          <input type="text" id="description" placeholder="如：TPE⇆AKL">
+          <input type="text" id="desc" placeholder="如：TPE⇆AKL">
         </div>
         <div class="form-actions">
           <button type="button" id="cancelBtn" class="btn btn-secondary">取消</button>
@@ -120,11 +120,11 @@
           <div class="expense-date">${formatDate(item.date)}</div>
           <div class="expense-category">${item.category}</div>
           <div class="expense-amount">$${item.amount.toLocaleString()}</div>
-          <div class="expense-paidby ${item.paid_by}">${item.paid_by}</div>
-          <div class="expense-desc">${escapeHtml(item.description)}</div>
+          <div class="expense-paidby ${item.paidby}">${item.paidby}</div>
+          <div class="expense-desc">${escapeHtml(item.desc)}</div>
           <div class="expense-actions">
-            <button onclick="editItem(${item.id})">編輯</button>
-            <button class="danger" onclick="deleteItem(${item.id})">刪除</button>
+            <button onclick="editItem('${item.id}')">編輯</button>
+            <button class="danger" onclick="deleteItem('${item.id}')">刪除</button>
           </div>
         </div>
       `).join('');
@@ -135,8 +135,8 @@
 
     function updateSummary(expenses) {
       const total = expenses.reduce((sum, e) => sum + e.amount, 0);
-      const xiaorou = expenses.filter(e => e.paid_by === '小肉').reduce((sum, e) => sum + e.amount, 0);
-      const xiaoniu = expenses.filter(e => e.paid_by === '小妞').reduce((sum, e) => sum + e.amount, 0);
+      const xiaorou = expenses.filter(e => e.paidby === '小肉').reduce((sum, e) => sum + e.amount, 0);
+      const xiaoniu = expenses.filter(e => e.paidby === '小妞').reduce((sum, e) => sum + e.amount, 0);
 
       document.getElementById('totalExpense').textContent = `$${total.toLocaleString()}`;
       document.getElementById('xiaorouExpense').textContent = `$${xiaorou.toLocaleString()}`;
@@ -181,8 +181,8 @@
         date: document.getElementById('date').value,
         category: document.getElementById('category').value,
         amount: parseInt(document.getElementById('amount').value),
-        paid_by: document.getElementById('paid_by').value,
-        description: document.getElementById('description').value
+        paidby: document.getElementById('paidby').value,
+        desc: document.getElementById('desc').value
       };
 
       if (id) {
