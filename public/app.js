@@ -27,6 +27,12 @@ function openModal(data = null) {
     if (document.getElementById('accommodation')) {
       document.getElementById('accommodation').value = data.accommodation || '';
     }
+    if (document.getElementById('guide_tips')) {
+      document.getElementById('guide_tips').value = data.guide_tips || '';
+    }
+    if (document.getElementById('recommendations')) {
+      document.getElementById('recommendations').value = data.recommendations || '';
+    }
     if (document.getElementById('notes')) {
       document.getElementById('notes').value = data.notes || '';
     }

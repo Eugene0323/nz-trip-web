@@ -13,6 +13,8 @@ db.exec(`
     activity TEXT NOT NULL,
     driving_info TEXT DEFAULT '',
     accommodation TEXT DEFAULT '',
+    guide_tips TEXT DEFAULT '',
+    recommendations TEXT DEFAULT '',
     notes TEXT DEFAULT '',
     backup_plan TEXT DEFAULT '',
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
@@ -39,8 +41,8 @@ db.exec(`
 const itineraryQueries = {
   getAll: db.prepare('SELECT * FROM itinerary ORDER BY day_number ASC'),
   getById: db.prepare('SELECT * FROM itinerary WHERE id = ?'),
-  insert: db.prepare('INSERT INTO itinerary (date, day_number, location, activity, driving_info, accommodation, notes, backup_plan) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'),
-  update: db.prepare('UPDATE itinerary SET date = ?, day_number = ?, location = ?, activity = ?, driving_info = ?, accommodation = ?, notes = ?, backup_plan = ? WHERE id = ?'),
+  insert: db.prepare('INSERT INTO itinerary (date, day_number, location, activity, driving_info, accommodation, guide_tips, recommendations, notes, backup_plan) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'),
+  update: db.prepare('UPDATE itinerary SET date = ?, day_number = ?, location = ?, activity = ?, driving_info = ?, accommodation = ?, guide_tips = ?, recommendations = ?, notes = ?, backup_plan = ? WHERE id = ?'),
   delete: db.prepare('DELETE FROM itinerary WHERE id = ?')
 };
 
@@ -63,10 +65,10 @@ module.exports = {
   itinerary: {
     getAll: () => itineraryQueries.getAll.all(),
     getById: (id) => itineraryQueries.getById.get(id),
-    create: (date, day_number, location, activity, driving_info, accommodation, notes, backup_plan) => 
-      itineraryQueries.insert.run(date, day_number, location, activity, driving_info, accommodation, notes, backup_plan),
-    update: (id, date, day_number, location, activity, driving_info, accommodation, notes, backup_plan) =>
-      itineraryQueries.update.run(date, day_number, location, activity, driving_info, accommodation, notes, backup_plan, id),
+    create: (date, day_number, location, activity, driving_info, accommodation, guide_tips, recommendations, notes, backup_plan) => 
+      itineraryQueries.insert.run(date, day_number, location, activity, driving_info, accommodation, guide_tips, recommendations, notes, backup_plan),
+    update: (id, date, day_number, location, activity, driving_info, accommodation, guide_tips, recommendations, notes, backup_plan) =>
+      itineraryQueries.update.run(date, day_number, location, activity, driving_info, accommodation, guide_tips, recommendations, notes, backup_plan, id),
     delete: (id) => itineraryQueries.delete.run(id)
   },
   expenses: {

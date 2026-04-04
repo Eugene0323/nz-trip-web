@@ -63,6 +63,14 @@
           <textarea id="notes" rows="2"></textarea>
         </div>
         <div class="form-group">
+          <label>導遊建議</label>
+          <textarea id="guide_tips" rows="2" placeholder="教練或導遊的特別提醒"></textarea>
+        </div>
+        <div class="form-group">
+          <label>推薦市集與活動</label>
+          <textarea id="recommendations" rows="2" placeholder="推薦的市集、活動等"></textarea>
+        </div>
+        <div class="form-group">
           <label>備案</label>
           <textarea id="backup_plan" rows="2" placeholder="如果主要行程無法執行時的替代方案"></textarea>
         </div>
@@ -101,6 +109,8 @@
           <div class="card-activity">${escapeHtml(item.activity)}</div>
           ${item.driving_info ? `<div class="card-driving">🚗 ${escapeHtml(item.driving_info)}</div>` : ''}
           ${item.accommodation ? `<div class="card-accommodation">🏨 住宿：${escapeHtml(item.accommodation)}</div>` : ''}
+          ${item.guide_tips ? `<div class="card-guide">🎯 導遊建議：${escapeHtml(item.guide_tips)}</div>` : ''}
+          ${item.recommendations ? `<div class="card-recommend">⭐ 推薦：${escapeHtml(item.recommendations)}</div>` : ''}
           ${item.notes ? `<div class="card-notes">📝 ${escapeHtml(item.notes)}</div>` : ''}
           ${item.backup_plan ? `<div class="card-backup">💡 備案：${escapeHtml(item.backup_plan)}</div>` : ''}
           <div class="card-actions">
@@ -135,6 +145,8 @@
         activity: document.getElementById('activity').value,
         driving_info: document.getElementById('driving_info').value,
         accommodation: document.getElementById('accommodation').value,
+        guide_tips: document.getElementById('guide_tips').value,
+        recommendations: document.getElementById('recommendations').value,
         notes: document.getElementById('notes').value,
         backup_plan: document.getElementById('backup_plan').value
       };
