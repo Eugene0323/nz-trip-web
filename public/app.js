@@ -10,11 +10,23 @@ function openModal(data = null) {
     document.getElementById('modalTitle').textContent = '編輯';
     document.getElementById('id').value = data.id || '';
     document.getElementById('date').value = data.date || '';
-    document.getElementById('day_number').value = data.day_number || '';
-    document.getElementById('location').value = data.location || '';
-    document.getElementById('activity').value = data.activity || '';
-    document.getElementById('notes').value = data.notes || '';
-    document.getElementById('backup_plan').value = data.backup_plan || '';
+    
+    // 行程表單
+    if (document.getElementById('day_number')) {
+      document.getElementById('day_number').value = data.day_number || '';
+    }
+    if (document.getElementById('location')) {
+      document.getElementById('location').value = data.location || '';
+    }
+    if (document.getElementById('activity')) {
+      document.getElementById('activity').value = data.activity || '';
+    }
+    if (document.getElementById('notes')) {
+      document.getElementById('notes').value = data.notes || '';
+    }
+    if (document.getElementById('backup_plan')) {
+      document.getElementById('backup_plan').value = data.backup_plan || '';
+    }
     
     // 花費表單
     if (document.getElementById('category')) {
