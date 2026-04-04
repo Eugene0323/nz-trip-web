@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>紐西蘭蜜月花費 | NZ Trip</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <h1>🇳🇿 紐西蘭蜜月</h1>
+      <div class="nav-links">
+        <a href="index.html">行程</a>
+        <a href="expenses.html" class="active">花費</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <div class="header">
+      <h2>💰 花費記錄</h2>
+      <button id="addBtn" class="btn btn-primary">+ 新增花費</button>
+    </div>
+
+    <!-- 總覽 -->
+    <div class="summary-cards">
+      <div class="summary-card">
+        <div class="summary-label">總支出</div>
+        <div class="summary-value" id="totalExpense">$0</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">小肉支出</div>
+        <div class="summary-value" id="xiaorouExpense">$0</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">小妞支出</div>
+        <div class="summary-value" id="xiaoniuExpense">$0</div>
+      </div>
+    </div>
+
+    <!-- 分類統計 -->
+    <div class="category-summary" id="categorySummary">
+    </div>
+
+    <!-- 花費列表 -->
+    <div id="expenseList" class="expense-list">
+      <div class="loading">載入中...</div>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <h3 id="modalTitle">新增花費</h3>
+      <form id="expenseForm">
+        <input type="hidden" id="id">
+        <div class="form-group">
+          <label>日期</label>
+          <input type="date" id="date" required>
+        </div>
+        <div class="form-group">
+          <label>類別</label>
+          <select id="category" required>
+            <option value="機票">機票</option>
+            <option value="住宿">住宿</option>
+            <option value="體驗">體驗</option>
+            <option value="交通">交通</option>
+            <option value="餐廳">餐廳</option>
+            <option value="採買">採買</option>
+            <option value="伴手禮">伴手禮</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>金額 (TWD)</label>
+          <input type="number" id="amount" min="0" required>
+        </div>
+        <div class="form-group">
+          <label>誰付的</label>
+          <select id="paid_by" required>
+            <option value="小肉">小肉</option>
+            <option value="小妞">小妞</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>備註</label>
+          <input type="text" id="description" placeholder="如：TPE⇆AKL">
+        </div>
+        <div class="form-actions">
+          <button type="button" id="cancelBtn" class="btn btn-secondary">取消</button>
+          <button type="submit" class="btn btn-primary">儲存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    const CATEGORIES = ['機票', '住宿', '體驗', '交通', '餐廳', '採買', '伴手禮', '其他'];
+
+    document.getElementById('addBtn').addEventListener('click', () => openModal());
+    document.getElementById('cancelBtn').addEventListener('click', () => closeModal());
+    document.getElementById('expenseForm').addEventListener('submit', handleSubmit);
+
+    async function loadExpenses() {
+      const res = await fetch('/api/expenses');
+      const data = await res.json();
+      const container = document.getElementById('expenseList');
+      
+      if (!data.success || data.data.length === 0) {
+        container.innerHTML = '<div class="empty">尚無花費資料</div>';
+        updateSummary([]);
+        return;
+      }
+
+      const expenses = data.data;
+      container.innerHTML = expenses.map(item => `
+        <div class="expense-card" data-id="${item.id}">
+          <div class="expense-date">${formatDate(item.date)}</div>
+          <div class="expense-category">${item.category}</div>
+          <div class="expense-amount">$${item.amount.toLocaleString()}</div>
+          <div class="expense-paidby ${item.paid_by}">${item.paid_by}</div>
+          <div class="expense-desc">${escapeHtml(item.description)}</div>
+          <div class="expense-actions">
+            <button onclick="editItem(${item.id})">編輯</button>
+            <button class="danger" onclick="deleteItem(${item.id})">刪除</button>
+          </div>
+        </div>
+      `).join('');
+
+      updateSummary(expenses);
+      updateCategorySummary(expenses);
+    }
+
+    function updateSummary(expenses) {
+      const total = expenses.reduce((sum, e) => sum + e.amount, 0);
+      const xiaorou = expenses.filter(e => e.paid_by === '小肉').reduce((sum, e) => sum + e.amount, 0);
+      const xiaoniu = expenses.filter(e => e.paid_by === '小妞').reduce((sum, e) => sum + e.amount, 0);
+
+      document.getElementById('totalExpense').textContent = `$${total.toLocaleString()}`;
+      document.getElementById('xiaorouExpense').textContent = `$${xiaorou.toLocaleString()}`;
+      document.getElementById('xiaoniuExpense').textContent = `$${xiaoniu.toLocaleString()}`;
+    }
+
+    function updateCategorySummary(expenses) {
+      const container = document.getElementById('categorySummary');
+      const stats = CATEGORIES.map(cat => ({
+        category: cat,
+        total: expenses.filter(e => e.category === cat).reduce((sum, e) => sum + e.amount, 0)
+      })).filter(s => s.total > 0);
+
+      container.innerHTML = stats.map(s => `
+        <div class="category-item">
+          <span class="category-name">${s.category}</span>
+          <span class="category-amount">$${s.total.toLocaleString()}</span>
+        </div>
+      `).join('');
+    }
+
+    let allExpenses = [];
+
+    async function editItem(id) {
+      const res = await fetch(`/api/expenses/${id}`);
+      const data = await res.json();
+      if (data.success) {
+        openModal(data.data);
+      }
+    }
+
+    async function deleteItem(id) {
+      if (!confirm('確定要刪除這筆花費？')) return;
+      await fetch(`/api/expenses/${id}`, { method: 'DELETE' });
+      loadExpenses();
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('id').value;
+      const payload = {
+        date: document.getElementById('date').value,
+        category: document.getElementById('category').value,
+        amount: parseInt(document.getElementById('amount').value),
+        paid_by: document.getElementById('paid_by').value,
+        description: document.getElementById('description').value
+      };
+
+      if (id) {
+        await fetch(`/api/expenses/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        await fetch('/api/expenses', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
+
+      closeModal();
+      loadExpenses();
+    }
+
+    loadExpenses();
+  </script>
+</body>
+</html>

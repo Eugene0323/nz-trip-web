@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>紐西蘭蜜月行程 | NZ Trip</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <h1>🇳🇿 紐西蘭蜜月</h1>
+      <div class="nav-links">
+        <a href="index.html" class="active">行程</a>
+        <a href="expenses.html">花費</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <div class="header">
+      <h2>📅 行程規劃</h2>
+      <button id="addBtn" class="btn btn-primary">+ 新增行程</button>
+    </div>
+
+    <div id="itineraryList" class="itinerary-list">
+      <div class="loading">載入中...</div>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <h3 id="modalTitle">新增行程</h3>
+      <form id="itineraryForm">
+        <input type="hidden" id="id">
+        <div class="form-group">
+          <label>日期</label>
+          <input type="date" id="date" required>
+        </div>
+        <div class="form-group">
+          <label>天數</label>
+          <input type="number" id="day_number" min="1" required>
+        </div>
+        <div class="form-group">
+          <label>地點</label>
+          <input type="text" id="location" required>
+        </div>
+        <div class="form-group">
+          <label>活動</label>
+          <input type="text" id="activity" required>
+        </div>
+        <div class="form-group">
+          <label>詳細備註</label>
+          <textarea id="notes" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label>備案</label>
+          <textarea id="backup_plan" rows="2" placeholder="如果主要行程無法執行時的替代方案"></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" id="cancelBtn" class="btn btn-secondary">取消</button>
+          <button type="submit" class="btn btn-primary">儲存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // 行程頁面特定邏輯
+    document.getElementById('addBtn').addEventListener('click', () => openModal());
+    document.getElementById('cancelBtn').addEventListener('click', () => closeModal());
+    document.getElementById('itineraryForm').addEventListener('submit', handleSubmit);
+
+    async function loadItinerary() {
+      const res = await fetch('/api/itinerary');
+      const data = await res.json();
+      const container = document.getElementById('itineraryList');
+      
+      if (!data.success || data.data.length === 0) {
+        container.innerHTML = '<div class="empty">尚無行程資料</div>';
+        return;
+      }
+
+      container.innerHTML = data.data.map(item => `
+        <div class="card" data-id="${item.id}">
+          <div class="card-header">
+            <span class="day-badge">Day ${item.day_number}</span>
+            <span class="date">${formatDate(item.date)}</span>
+          </div>
+          <div class="card-location">📍 ${escapeHtml(item.location)}</div>
+          <div class="card-activity">${escapeHtml(item.activity)}</div>
+          ${item.notes ? `<div class="card-notes">📝 ${escapeHtml(item.notes)}</div>` : ''}
+          ${item.backup_plan ? `<div class="card-backup">💡 備案：${escapeHtml(item.backup_plan)}</div>` : ''}
+          <div class="card-actions">
+            <button onclick="editItem(${item.id})">編輯</button>
+            <button class="danger" onclick="deleteItem(${item.id})">刪除</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function editItem(id) {
+      const res = await fetch(`/api/itinerary/${id}`);
+      const data = await res.json();
+      if (data.success) {
+        openModal(data.data);
+      }
+    }
+
+    async function deleteItem(id) {
+      if (!confirm('確定要刪除這筆行程？')) return;
+      await fetch(`/api/itinerary/${id}`, { method: 'DELETE' });
+      loadItinerary();
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('id').value;
+      const payload = {
+        date: document.getElementById('date').value,
+        day_number: parseInt(document.getElementById('day_number').value),
+        location: document.getElementById('location').value,
+        activity: document.getElementById('activity').value,
+        notes: document.getElementById('notes').value,
+        backup_plan: document.getElementById('backup_plan').value
+      };
+
+      if (id) {
+        await fetch(`/api/itinerary/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        await fetch('/api/itinerary', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
+
+      closeModal();
+      loadItinerary();
+    }
+
+    loadItinerary();
+  </script>
+</body>
+</html>
