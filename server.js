@@ -66,6 +66,21 @@ app.get('/api/expenses', (req, res) => {
   }
 });
 
+// 取得單筆花費
+app.get('/api/expenses/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const item = db.expenses.getById(id);
+    if (item) {
+      res.json({ success: true, data: item });
+    } else {
+      res.status(404).json({ success: false, error: 'Not found' });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // 新增花費
 app.post('/api/expenses', (req, res) => {
   try {
