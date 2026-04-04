@@ -51,6 +51,14 @@
           <input type="text" id="activity" required>
         </div>
         <div class="form-group">
+          <label>駕駛資訊</label>
+          <textarea id="driving_info" rows="2" placeholder="例如：CHC ➔ Tekapo (200km, 2.5h) | 本日總車程：約 4 小時"></textarea>
+        </div>
+        <div class="form-group">
+          <label>住宿</label>
+          <input type="text" id="accommodation" placeholder="例如：Lake Tekapo M&H Park">
+        </div>
+        <div class="form-group">
           <label>詳細備註</label>
           <textarea id="notes" rows="2"></textarea>
         </div>
@@ -91,6 +99,8 @@
           </div>
           <div class="card-location">📍 ${escapeHtml(item.location)}</div>
           <div class="card-activity">${escapeHtml(item.activity)}</div>
+          ${item.driving_info ? `<div class="card-driving">🚗 ${escapeHtml(item.driving_info)}</div>` : ''}
+          ${item.accommodation ? `<div class="card-accommodation">🏨 住宿：${escapeHtml(item.accommodation)}</div>` : ''}
           ${item.notes ? `<div class="card-notes">📝 ${escapeHtml(item.notes)}</div>` : ''}
           ${item.backup_plan ? `<div class="card-backup">💡 備案：${escapeHtml(item.backup_plan)}</div>` : ''}
           <div class="card-actions">
@@ -123,6 +133,8 @@
         day_number: parseInt(document.getElementById('day_number').value),
         location: document.getElementById('location').value,
         activity: document.getElementById('activity').value,
+        driving_info: document.getElementById('driving_info').value,
+        accommodation: document.getElementById('accommodation').value,
         notes: document.getElementById('notes').value,
         backup_plan: document.getElementById('backup_plan').value
       };

@@ -130,7 +130,25 @@ main {
 
 .card-activity {
   color: #555;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.card-driving {
+  background: #f0f0f0;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+.card-accommodation {
+  background: #fff3e0;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #e65100;
+  margin-top: 0.5rem;
 }
 
 .card-notes {

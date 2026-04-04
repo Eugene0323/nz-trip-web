@@ -21,6 +21,12 @@ function openModal(data = null) {
     if (document.getElementById('activity')) {
       document.getElementById('activity').value = data.activity || '';
     }
+    if (document.getElementById('driving_info')) {
+      document.getElementById('driving_info').value = data.driving_info || '';
+    }
+    if (document.getElementById('accommodation')) {
+      document.getElementById('accommodation').value = data.accommodation || '';
+    }
     if (document.getElementById('notes')) {
       document.getElementById('notes').value = data.notes || '';
     }
