@@ -31,6 +31,21 @@ app.post('/api/itinerary', (req, res) => {
   }
 });
 
+// 取得單筆行程
+app.get('/api/itinerary/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const item = db.itinerary.getById(id);
+    if (item) {
+      res.json({ success: true, data: item });
+    } else {
+      res.status(404).json({ success: false, error: 'Not found' });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // 更新行程
 app.put('/api/itinerary/:id', (req, res) => {
   try {
