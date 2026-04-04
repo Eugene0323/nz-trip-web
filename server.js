@@ -23,8 +23,8 @@ app.get('/api/itinerary', (req, res) => {
 // 新增行程
 app.post('/api/itinerary', (req, res) => {
   try {
-    const { date, day_number, location, activity, driving_info, accommodation, guide_tips, recommendations, notes, backup_plan } = req.body;
-    db.itinerary.create(date, day_number, location, activity, driving_info || '', accommodation || '', guide_tips || '', recommendations || '', notes || '', backup_plan || '');
+    const { date, day_number, location, activity, driving_info, accommodation, guide_tips, recommendations, attachment_url, notes, backup_plan } = req.body;
+    db.itinerary.create(date, day_number, location, activity, driving_info || '', accommodation || '', guide_tips || '', recommendations || '', attachment_url || '', notes || '', backup_plan || '');
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -50,8 +50,8 @@ app.get('/api/itinerary/:id', (req, res) => {
 app.put('/api/itinerary/:id', (req, res) => {
   try {
     const { id } = req.params;
-    const { date, day_number, location, activity, driving_info, accommodation, guide_tips, recommendations, notes, backup_plan } = req.body;
-    db.itinerary.update(id, date, day_number, location, activity, driving_info || '', accommodation || '', guide_tips || '', recommendations || '', notes || '', backup_plan || '');
+    const { date, day_number, location, activity, driving_info, accommodation, guide_tips, recommendations, attachment_url, notes, backup_plan } = req.body;
+    db.itinerary.update(id, date, day_number, location, activity, driving_info || '', accommodation || '', guide_tips || '', recommendations || '', attachment_url || '', notes || '', backup_plan || '');
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -181,7 +181,7 @@ function initItinerary() {
 
   const stmt = db.itinerary.create;
   itineraryData.forEach(item => {
-    stmt(item.date, item.day, item.location, item.activity, item.driving_info, item.accommodation, item.guide_tips, item.recommendations, item.notes, item.backup);
+    stmt(item.date, item.day, item.location, item.activity, item.driving_info, item.accommodation, item.guide_tips, item.recommendations, item.attachment_url || '', item.notes, item.backup);
   });
 }
 

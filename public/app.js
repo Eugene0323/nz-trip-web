@@ -33,6 +33,9 @@ function openModal(data = null) {
     if (document.getElementById('recommendations')) {
       document.getElementById('recommendations').value = data.recommendations || '';
     }
+    if (document.getElementById('attachment_url')) {
+      document.getElementById('attachment_url').value = data.attachment_url || '';
+    }
     if (document.getElementById('notes')) {
       document.getElementById('notes').value = data.notes || '';
     }

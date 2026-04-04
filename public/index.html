@@ -71,6 +71,10 @@
           <textarea id="recommendations" rows="2" placeholder="推薦的市集、活動等"></textarea>
         </div>
         <div class="form-group">
+          <label>附件連結</label>
+          <input type="url" id="attachment_url" placeholder="粘貼 Google Drive、Dropbox 或其他檔案分享連結">
+        </div>
+        <div class="form-group">
           <label>備案</label>
           <textarea id="backup_plan" rows="2" placeholder="如果主要行程無法執行時的替代方案"></textarea>
         </div>
@@ -89,6 +93,12 @@
     document.getElementById('cancelBtn').addEventListener('click', () => closeModal());
     document.getElementById('itineraryForm').addEventListener('submit', handleSubmit);
 
+    // 產生 Google Maps 連結
+    function getMapsUrl(location) {
+      const encoded = encodeURIComponent(location + ', New Zealand');
+      return `https://www.google.com/maps/search/?api=1&query=${encoded}`
+    }
+
     async function loadItinerary() {
       const res = await fetch('/api/itinerary');
       const data = await res.json();
@@ -105,12 +115,18 @@
             <span class="day-badge">Day ${item.day_number}</span>
             <span class="date">${formatDate(item.date)}</span>
           </div>
-          <div class="card-location">📍 ${escapeHtml(item.location)}</div>
+          <div class="card-location-row">
+            <span class="card-location">📍 ${escapeHtml(item.location)}</span>
+            <a href="${getMapsUrl(item.location)}" target="_blank" class="maps-link" title="在 Google Maps 查看">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#4285F4"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            </a>
+          </div>
           <div class="card-activity">${escapeHtml(item.activity)}</div>
           ${item.driving_info ? `<div class="card-driving">🚗 ${escapeHtml(item.driving_info)}</div>` : ''}
           ${item.accommodation ? `<div class="card-accommodation">🏨 住宿：${escapeHtml(item.accommodation)}</div>` : ''}
           ${item.guide_tips ? `<div class="card-guide">🎯 導遊建議：${escapeHtml(item.guide_tips)}</div>` : ''}
           ${item.recommendations ? `<div class="card-recommend">⭐ 推薦：${escapeHtml(item.recommendations)}</div>` : ''}
+          ${item.attachment_url ? `<div class="card-attachment"><a href="${escapeHtml(item.attachment_url)}" target="_blank" class="attachment-link">📎 附件/憑證</a></div>` : ''}
           ${item.notes ? `<div class="card-notes">📝 ${escapeHtml(item.notes)}</div>` : ''}
           ${item.backup_plan ? `<div class="card-backup">💡 備案：${escapeHtml(item.backup_plan)}</div>` : ''}
           <div class="card-actions">
@@ -147,6 +163,7 @@
         accommodation: document.getElementById('accommodation').value,
         guide_tips: document.getElementById('guide_tips').value,
         recommendations: document.getElementById('recommendations').value,
+        attachment_url: document.getElementById('attachment_url').value,
         notes: document.getElementById('notes').value,
         backup_plan: document.getElementById('backup_plan').value
       };
