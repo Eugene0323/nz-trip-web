@@ -33,32 +33,29 @@ function openModal(data = null) {
     if (document.getElementById('recommendations')) {
       document.getElementById('recommendations').value = data.recommendations || '';
     }
-    if (document.getElementById('attachment_url')) {
-      document.getElementById('attachment_url').value = data.attachment_url || '';
-    }
-    // 載入自訂地點
-    if (document.getElementById('customLocationsContainer')) {
-      const container = document.getElementById('customLocationsContainer');
-      container.innerHTML = '';
+    // 載入附件
+    if (document.getElementById('attachmentsContainer')) {
+      const attContainer = document.getElementById('attachmentsContainer');
+      attContainer.innerHTML = '';
       try {
-        const locations = data.custom_locations ? JSON.parse(data.custom_locations) : [];
-        if (Array.isArray(locations) && locations.length > 0) {
-          locations.forEach(loc => {
+        const attachments = data.attachments ? JSON.parse(data.attachments) : [];
+        if (Array.isArray(attachments) && attachments.length > 0) {
+          attachments.forEach(att => {
             const row = document.createElement('div');
-            row.className = 'custom-location-row';
+            row.className = 'attachment-row';
             row.style = 'display:flex; gap:0.5rem; margin-bottom:0.3rem;';
             row.innerHTML = `
-              <input type="text" class="custom-loc-name" placeholder="標籤名稱" value="${escapeHtml(loc.name || '')}" style="flex:1; padding:0.5rem; border:1px solid #ddd; border-radius:4px;">
-              <input type="url" class="custom-loc-url" placeholder="Google Maps 連結" value="${escapeHtml(loc.url || '')}" style="flex:2; padding:0.5rem; border:1px solid #ddd; border-radius:4px;">
-              <button type="button" onclick="removeCustomLocRow(this)" style="padding:0.5rem; background:#ff4444; color:white; border:none; border-radius:4px; cursor:pointer;">✕</button>
+              <input type="text" class="attachment-name" placeholder="附件名稱" value="${escapeHtml(att.name || '')}" style="flex:1; padding:0.5rem; border:1px solid #ddd; border-radius:4px;">
+              <input type="url" class="attachment-url" placeholder="檔案連結" value="${escapeHtml(att.url || '')}" style="flex:2; padding:0.5rem; border:1px solid #ddd; border-radius:4px;">
+              <button type="button" onclick="removeAttachmentRow(this)" style="padding:0.5rem; background:#ff4444; color:white; border:none; border-radius:4px; cursor:pointer;">✕</button>
             `;
-            container.appendChild(row);
+            attContainer.appendChild(row);
           });
         } else {
-          addCustomLocRow();
+          addAttachmentRow();
         }
       } catch(e) {
-        addCustomLocRow();
+        addAttachmentRow();
       }
     }
     if (document.getElementById('notes')) {
