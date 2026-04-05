@@ -33,12 +33,44 @@ function openModal(data = null) {
     if (document.getElementById('recommendations')) {
       document.getElementById('recommendations').value = data.recommendations || '';
     }
+    // 載入自訂地點
+    if (document.getElementById('customLocationsContainer')) {
+      const locContainer = document.getElementById('customLocationsContainer');
+      locContainer.innerHTML = '';
+      try {
+        let locations = data.custom_locations;
+        if (typeof locations === 'string') {
+          locations = locations ? JSON.parse(locations) : [];
+        }
+        if (Array.isArray(locations) && locations.length > 0) {
+          locations.forEach(loc => {
+            const row = document.createElement('div');
+            row.className = 'custom-location-row';
+            row.style = 'display:flex; gap:0.5rem; margin-bottom:0.3rem;';
+            row.innerHTML = `
+              <input type="text" class="custom-loc-name" placeholder="標籤名稱" value="${escapeHtml(loc.name || '')}" style="flex:1; padding:0.5rem; border:1px solid #ddd; border-radius:4px;">
+              <input type="url" class="custom-loc-url" placeholder="Google Maps 連結" value="${escapeHtml(loc.url || '')}" style="flex:2; padding:0.5rem; border:1px solid #ddd; border-radius:4px;">
+              <button type="button" onclick="removeCustomLocRow(this)" style="padding:0.5rem; background:#ff4444; color:white; border:none; border-radius:4px; cursor:pointer;">✕</button>
+            `;
+            locContainer.appendChild(row);
+          });
+        } else {
+          addCustomLocRow();
+        }
+      } catch(e) {
+        locContainer.innerHTML = '';
+        addCustomLocRow();
+      }
+    }
     // 載入附件
     if (document.getElementById('attachmentsContainer')) {
       const attContainer = document.getElementById('attachmentsContainer');
       attContainer.innerHTML = '';
       try {
-        const attachments = data.attachments ? JSON.parse(data.attachments) : [];
+        let attachments = data.attachments;
+        if (typeof attachments === 'string') {
+          attachments = attachments ? JSON.parse(attachments) : [];
+        }
         if (Array.isArray(attachments) && attachments.length > 0) {
           attachments.forEach(att => {
             const row = document.createElement('div');
@@ -55,6 +87,7 @@ function openModal(data = null) {
           addAttachmentRow();
         }
       } catch(e) {
+        attContainer.innerHTML = '';
         addAttachmentRow();
       }
     }
