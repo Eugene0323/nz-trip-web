@@ -114,6 +114,22 @@ app.get('/api/expenses', (req, res) => {
   }
 });
 
+// ===== 匯出 API (n8n 備份用) =====
+app.get('/api/export', (req, res) => {
+  try {
+    const itinerary = db.itinerary.getAll();
+    const expenses = db.expenses.getAll();
+    const exportData = {
+      exported_at: new Date().toISOString(),
+      itinerary,
+      expenses
+    };
+    res.json(exportData);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // 取得單筆花費
 app.get('/api/expenses/:id', (req, res) => {
   try {
