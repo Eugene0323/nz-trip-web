@@ -1,7 +1,11 @@
 const Database = require('better-sqlite3');
 const path = require('path');
 
-const db = new Database(path.join(__dirname, 'trip.db'));
+// 使用持久化路徑，Zeabur 的 /data 目錄會持久保存
+const dbPath = process.env.DB_PATH || path.join(__dirname, 'trip.db');
+const db = new Database(dbPath);
+
+console.log('資料庫路徑:', dbPath);
 
 // 初始化資料庫表格
 db.exec(`
